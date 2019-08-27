@@ -28,6 +28,7 @@ classdef QR
         % Paramters of QR code (um)
         module_size = 0.75;  % 0.75
         r = Base.QR.module_size/1.5;
+        secondary_r = Base.QR.module_size/4;
         d = Base.QR.module_size + 0.5;  % Newer versions use module_size not r
         spacing = sqrt(Base.QR.length)*Base.QR.module_size + 2*Base.QR.d;
         NSecondary = 3;  % Number of secondary markers (per arm)
