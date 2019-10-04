@@ -5,14 +5,14 @@ classdef GreenCalib < Experiments.PulseSequenceSweep.PulseSequenceSweep_invisibl
     properties(SetObservable,AbortSet)
         exciteLaser = Modules.Source.empty(1,0); % Allow selection of source
         APDline = 3;
-        repumpTime_us = 'linspace(100,1000,101)'; 
-        countTime_us = 'linspace(0,100,101)';
-        delayTime = 200;
+        repumpTime_us = 'linspace(0.1,1,101)'; 
+        countTime_us = 'linspace(0.1,0.5,41)';
+        delayTime = 100;
     end
     
     properties
-        countTime = linspace(0,100,101); %will be in us
-        repumpTime = linspace(100,1000,101);
+        repumpTime = linspace(0.1,1,101);
+        countTime = linspace(0.1,0.5,41); %will be in us
     end
     
     properties(Constant)
