@@ -4,14 +4,14 @@ function [delay, ontime] = CalibrateDelay(laserLine,apdLine,NIDAQ_dev,PB_ip)
 %   APDline = hardware line for APD being used for calibration
 
 apdBin = 0.1; %resolution of APD bin in us
-maxDelay = 10; %maximum expeceted delay in us
+maxDelay = 3; %maximum expeceted delay in us
 maxCounts = 1e2;
 nidaq = Drivers.NIDAQ.dev.instance(NIDAQ_dev);
 pb = Drivers.PulseBlaster.Remote.instance(PB_ip);
 
 % Note, BuildCalibrateSequence resets offsets to [0,0]
 
-SNR = 6; %averages will be increased until SNR on counts is this
+SNR = 5; %averages will be increased until SNR on counts is this
 
 % First, figure out the number of averages needed to get desired SNR
 s = calibrate.BuildCalibrateSequence(laserLine,2*maxDelay,apdLine,apdBin,maxDelay,1000); %builds sequence object
