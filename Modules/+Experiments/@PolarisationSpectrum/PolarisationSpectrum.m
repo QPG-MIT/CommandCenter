@@ -91,7 +91,7 @@ classdef PolarisationSpectrum < Modules.Experiment
         end
         
         function delete(obj)
-            delete(obj.spec_experiment);
+            delete(f);
             delete(obj.rot);
         end
     end

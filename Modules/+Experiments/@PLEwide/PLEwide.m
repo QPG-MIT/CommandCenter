@@ -63,10 +63,6 @@ classdef PLEwide < Modules.Experiment
 
         % Set methods allow validating property/pref set values
         function set.resLaser(obj,val)
-            if isempty(val)
-                obj.resLaser = val;
-                return
-            end
             h = superclasses(val);
             assert(ismember('Sources.TunableLaser_invisible',h),'Laser must be tunable')
             obj.resLaser = val;
