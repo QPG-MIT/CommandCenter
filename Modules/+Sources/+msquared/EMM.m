@@ -21,6 +21,7 @@ classdef EMM < Modules.Source & Sources.TunableLaser_invisible
     end
     properties(SetAccess=protected)
         % total tunable range in THz (should be updated when crystal changed; see obj.fitted_oven)
+%         range = Sources.TunableLaser_invisible.c./[515,582];
         range = Sources.TunableLaser_invisible.c./[580,661];
     end
     properties(SetObservable,AbortSet)
