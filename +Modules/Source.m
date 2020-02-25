@@ -33,7 +33,8 @@ classdef Source < Base.Module
             % turns a source on from CC GUI, so the developer is responsible
             % for ensuring extra work isn't performed if not necessary.
             if ~obj.armed
-                resp = questdlg('Source not armed; arm source, then click "Ok"','Arm (Modules.Source)','Ok','Cancel','Ok');
+                queststring = sprintf('Source %s is not armed; arm source, then click "Ok"',class(obj));
+                resp = questdlg(queststring,'Arm (Modules.Source)','Ok','Cancel','Ok');
                 if ~strcmp(resp,'Ok')
                     error('%s not armed',class(obj))
                 end
@@ -45,7 +46,8 @@ classdef Source < Base.Module
             %block emissions from the source; for example, this may include
             %powering off a source
             if obj.armed
-                resp = questdlg('Source is armed; blackout source, then click "Ok"','Blackout (Modules.Source)','Ok','Cancel','Ok');
+                queststring = sprintf('Source %s is armed; blackout source, then click "Ok"',class(obj));
+                resp = questdlg(queststring,'Blackout (Modules.Source)','Ok','Cancel','Ok');
                 if ~strcmp(resp,'Ok')
                     error('%s not blacked out',class(obj))
                 end
