@@ -118,7 +118,7 @@ classdef solstis < Modules.Driver
         
         function set_resonator_percent(obj,val)
             [~,locked,~] = obj.getWavelength();
-            assert(~locked,'Laser is currently locked, remove with obj.lock_wavelength("off")');
+            assert(~locked,'Laser is currently locked, remove wavelength lock and try again.');
             assert(val >=0 && val <= 100, 'Resonator percent must be between 0 and 100');
             obj.com('set_resonator_val',val);
         end
@@ -126,14 +126,14 @@ classdef solstis < Modules.Driver
         function set_etalon_lock(obj,val)
             assert(ismember(val,{'on','off'}),'val must be either "on" or "off"')
             [~,locked,~] = obj.getWavelength();
-            assert(~locked,'Laser is currently locked, remove with obj.lock_wavelength("off")');
+            assert(~locked,'Laser is currently locked, remove wavelength lock and try again.');
             out = obj.com('set_etalon_lock',val);
             assert(out{1}.status==0,sprintf('Command failed with status: %i',out{1}.status))
             assert(out{2}.report==0,sprintf('Completion failed with status: %i',out{2}.report))
         end
         function set_etalon_percent(obj,val)
             [~,locked,~] = obj.getWavelength();
-            assert(~locked,'Laser is currently locked, remove with obj.lock_wavelength("off")');
+            assert(~locked,'Laser is currently locked, remove wavelength lock and try again.');
             assert(val >=0 && val <= val, 'Resonator percent must be between 0 and 100');
             obj.com('set_etalon_val',val);
         end
