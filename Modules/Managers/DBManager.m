@@ -94,7 +94,7 @@ classdef DBManager < Base.Manager
                             obj.sandboxed_function({active_DBmodule,type},data,ax,module,notes);
                             obj.log('%s to <a href="matlab: opentoline(%s,1)">%s</a>',type,which(DBclass_str),DBclass_str)
                         catch err
-                            obj.error('Some saves failed. Should never get here!! Seek help at commandcenter-dev.slack.com\n%s',err.message)
+                            obj.error(sprint('Some saves failed. Should never get here!! Seek help at commandcenter-dev.slack.com\n%s'),err.message)
                         end
                     end
                 end
