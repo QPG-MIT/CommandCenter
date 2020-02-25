@@ -31,8 +31,7 @@ classdef (Sealed) APTMotor < Drivers.APT & Modules.Driver
             APTSystem = Drivers.APTSystem.instance;
             devices = APTSystem.getDevices;
             devices = num2cell(double(devices.USB_STEPPER_DRIVE));
-            devices = cellfun(@num2str,devices,'uniformoutput',false);
-            delete(APTSystem) % Needs to be deleted to update properly
+            devices = [{'0'},cellfun(@num2str,devices,'uniformoutput',false)];
             delete(f);
         end
         % Use this to create/retrieve instance associated with serialNum

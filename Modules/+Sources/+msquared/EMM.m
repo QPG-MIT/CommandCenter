@@ -24,7 +24,7 @@ classdef EMM < Sources.msquared.common_invisible
         fitted_oven = Prefs.Integer(1,'readonly',true,'set','set_fitted_oven',...
             'help_text','Crystal being used: 1,2,3. This also sets range');
     end
-    properties(Access={?Sources.msquared.EMM, ?Sources.msquared.common_invisible})
+    properties(Access=protected)
         emmHandle     % handle to EMM driver
     end
     
@@ -98,15 +98,13 @@ classdef EMM < Sources.msquared.common_invisible
             % Common gets solstis stuff
             updateStatus@Sources.msquared.common_invisible(obj)
             % Now get EMM stuff. This kills man-in-the-middle!!
-            obj.updatingVal = true;
             if isempty(obj.emmHandle) || ~isvalid(obj.emmHandle)
-                obj.fitted_oven = NaN;
-            else
                 reply = obj.emmHandle.getStatus();
-                obj.fitted_oven = reply.fitted_oven;
-                obj.tuning = strcmp(reply.tuning,'active'); % Overwrite getWavelength tuning status with EMM tuning state
+                obj.updatingVal = true;
+                    obj.fitted_oven = reply.fitted_oven;
+                    obj.tuning = strcmp(reply.tuning,'active'); % Overwrite getWavelength tuning status with EMM tuning state
+                obj.updatingVal = false;
             end
-            obj.updatingVal = false;
         end
         function tune(obj,target)
             % This is the tuning method that interacts with hardware
