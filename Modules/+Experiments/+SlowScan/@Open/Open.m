@@ -59,6 +59,7 @@ classdef Open < Experiments.SlowScan.SlowScan_invisible
                 obj.resLaser.TuneCoarse(obj.freq_THz);
             end
             obj.percentInitialPosition = obj.resLaser.GetPercent;
+            obj.meta.percentInitialPosition = obj.percentInitialPosition;
             PreRun@Experiments.SlowScan.SlowScan_invisible(obj,[],managers,ax);
         end  
         function set.percents(obj,val)
