@@ -95,10 +95,10 @@ classdef SpecSlowScan < Experiments.AutoExperiment.AutoExperiment_invisible
         % method of the corresponding experiment each time it is called
         function PreSpec(obj,~)
             % PreRun assures same resLaser for open/closed
-            obj.experiments(2).resLaser.off;
-            obj.experiments(2).repumpLaser.off;
+            obj.experiments(2).resLaser.blackout;
+            obj.experiments(2).repumpLaser.blackout;
             obj.imaging_source.on;
-            obj.experiments(2).resLaser.SpecSafeMode(obj.freq_range);
+            %obj.experiments(2).resLaser.SpecSafeMode(obj.freq_range);
         end
         function PreSlow(obj,slow_experiment)
             % turn off spectrometer laser before PLE
