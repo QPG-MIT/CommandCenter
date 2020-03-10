@@ -12,12 +12,12 @@ classdef WidefieldSlowScan_invisible < Modules.Experiment
         
         repump_always_on = Prefs.Boolean(false);
         
-        only_get_freq = Prefs.Boolean(false);
-        save_freq = Prefs.Boolean(true);
+        blank_camera = Prefs.Boolean(false);
+        ignore_freq = Prefs.Boolean(false,'help','If checked, won''t save frequency points.');
     end
     properties
         prefs = {};
-        scan_points = []; %frequency points, either in THz or in percents
+        scan_points = []; %voltages in percents
     end
     properties(Constant)
         % Required by PulseSequenceSweep_invisible
@@ -27,87 +27,71 @@ classdef WidefieldSlowScan_invisible < Modules.Experiment
         data = [] % subclasses should not set this; it can be manipulated in GetData if necessary
         meta = [] % Store experimental settings
         abort_request = false; % Flag that will be set to true upon abort. Used in run method.
-        pbH;    % Handle to pulseblaster
-        nidaqH; % Handle to NIDAQ
     end
     
     methods
         function obj = WidefieldSlowScan_invisible()
-            obj.prefs = [obj.prefs,{'resLaser', 'repumpLaser', 'imaging', 'repump_always_on', 'save_freq', 'only_get_freq'}]; %additional preferences not in superclass
+            obj.prefs = [obj.prefs,{'resLaser', 'repumpLaser', 'imaging', 'repump_always_on'}]; %additional preferences not in superclass
         end
         
-        function run( obj,status,managers,ax)
+        function run(obj,status,managers,ax)
             % Main run method (callback for CC run button)
             obj.abort_request = false;
             status.String = 'Experiment started';
             drawnow;
-
-            if ~obj.only_get_freq
-                obj.data.images = zeros([obj.imaging.width, obj.imaging.height, length(obj.scan_points)], 'int16');
+            
+            if ~obj.blank_camera
+                test_im = obj.imaging.snapImage;
+                obj.data.images = zeros([obj.imaging.width, obj.imaging.height, length(obj.scan_points)],class(test_im));
             end
-
+            
             obj.meta.prefs = obj.prefs2struct;
             for i = 1:length(obj.vars)
                 obj.meta.vars(i).name = obj.vars{i};
                 obj.meta.vars(i).vals = obj.(obj.vars{i});
             end
             obj.meta.position = managers.Stages.position; % Stage position
-
+            
+            err = [];
             try
                 obj.PreRun(status,managers,ax);
                 
                 for freqIndex = 1:length(obj.scan_points)
-%                     'frame'
-%                     tic
                     status.String = sprintf('Progress (%i/%i pts):\n  Setting laser', freqIndex, length(obj.scan_points));
-                    drawnow
-%                     toc
+                    drawnow limitrate;
                     
-                    if ~obj.only_get_freq
+                    if ~obj.blank_camera
                         if ~obj.repump_always_on
                             obj.repumpLaser.on
                         end
                     end
                     
-%                     tic
                     obj.setLaser(obj.scan_points(freqIndex));
-%                     toc
-                    
-%                     tic
-                    if obj.save_freq
+                    if ~obj.ignore_freq
                         obj.data.freqs_measured(freqIndex) = obj.resLaser.getFrequency();
                     end
-%                     toc
-                    
-                    
-                    
-                    if ~obj.only_get_freq
+                    if ~obj.blank_camera
                         if ~obj.repump_always_on
                             obj.repumpLaser.off
                         end
                         
-%                         tic
                         status.String = sprintf('Progress (%i/%i pts):\n  Snapping image', freqIndex, length(obj.scan_points));
                         drawnow
-%                         toc
-
-%                         tic
                         obj.data.images(:,:,freqIndex) = obj.imaging.snapImage;
                         ax.UserData.CData = obj.data.images(:,:,freqIndex);
-%                         toc
                     end
                     
                     if obj.abort_request
                         break;
                     end
                 end
-
+                
             catch err
             end
             
-            obj.setLaser(0);
+            obj.PostRun(status,managers,ax);
             
-            if exist('err','var')
+            if isempty(err)
                 rethrow(err)
             end
         end
@@ -123,10 +107,8 @@ classdef WidefieldSlowScan_invisible < Modules.Experiment
             dat.meta = obj.meta;
         end
         
-        function setLaser(obj, scan_point)
-            if scan_point ~= 0  % Intentional for ClosedDAQ overload
-                obj.resLaser.TuneSetpoint(scan_point);
-            end
+        function setLaser(obj,scan_point)
+            obj.resLaser.TuneSetpoint(scan_point);
         end
         
         function PreRun(obj,~,managers,ax)
@@ -136,13 +118,17 @@ classdef WidefieldSlowScan_invisible < Modules.Experiment
             h = obj.imaging.height;
             
             ax.UserData = imagesc(ax, 1:w, 1:h, NaN(h, w));
-            set(ax,'DataAspectRatio',[1 1 1])
+            axis(ax,'image')
             
             xlabel(ax, '$x$ [pix]', 'interpreter', 'latex');
             ylabel(ax, '$y$ [pix]', 'interpreter', 'latex');
             
             obj.repumpLaser.on
             obj.resLaser.on
+        end
+        
+        function PostRun(obj,~,managers,ax)
+            %Should be overwritten in subclasses
         end
     end
 end
