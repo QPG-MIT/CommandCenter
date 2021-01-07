@@ -12,7 +12,7 @@ classdef hwserver < handle
     end
     
     methods
-        function obj = hwserver(ip,~)
+        function obj = hwserver(ip,~) %IP or web address of the thing you are interested in
             if nargin > 1
                 warning('CC:legacy','Port (second input) is legacy. Consider updating your code.')
             end

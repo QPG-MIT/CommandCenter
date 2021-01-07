@@ -69,6 +69,38 @@ classdef Experiment < Base.Module
                 error('"%s" does not have an analysis method implemented.',origin);
             end
         end
+        
+        function varargout = wfanalyze(data,varargin)
+            % Assuming data is a struct that is built by the DBManager, the
+            % method will attempt to call the appropriate analysis method
+            % of data's origin module with data.data
+            % NOTE: depending on module used to save the data struct, the
+            % data struct may need to be reassembled!
+            if ~isfield(data,'origin')
+                error('Data struct does not contain origin. Perhaps saved before this update was implemented.')
+            end
+            origin = data.origin;
+            mmc = meta.class.fromName(origin);
+            assert(~isempty(mmc),sprintf('Could not find "%s" on path. Make sure CommandCenter is on your path.',origin))
+            mask = ismember({mmc.MethodList.Name},'wfanalyze');
+            assert(sum(mask)==1,'Impossible! Did not find one wfanalyze method (should have inherited this one).');
+            % Verify that method was not this one
+            if ~strcmp(mfilename('class'), mmc.MethodList(mask).DefiningClass.Name)
+                fn = str2func([origin '.wfanalyze']);
+                varargout = cell(1,nargout);
+                try
+                    [varargout{:}] = fn(data.data,varargin{:}); %this is where it's unhappy :( 
+                    varargout = varargout(1:nargout); % Cut down to requested number from caller
+                catch err
+                    error(['Unable to call %s.analysis(data.data). ',...
+                        'This could be due to a poorly formatted or incorrectly reassembled data struct:\n\n%s'],...
+                        origin, getReport(err));
+                end
+            else
+                error('"%s" does not have an analysis method implemented.',origin);
+            end
+        end
+        
         function new(experiment_name)
             % Pull templates into correct folder
             thisfolder = fileparts(mfilename('fullpath'));
