@@ -1,4 +1,4 @@
-function varargout = wideanal(data,varargin)
+function varargout = wfanalyze(data,varargin)
 %ANALYZE Examine data from all sites
 %   Inputs:
 %       data: data produced by GetData method
